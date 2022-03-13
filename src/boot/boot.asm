@@ -28,7 +28,8 @@ load_protected:
     mov eax, cr0
     or eax, 1
     mov cr0, eax
-    jmp CODE_SEG:load_32
+    ; jmp CODE_SEG:load_32
+    jmp $
 
 gdt_start:
 gdt_null:
@@ -57,19 +58,6 @@ gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1 ; Size.
     dd gdt_start ; Offset.
-
-
-[BITS 32]
-load_32:
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov ebp, 0x00200000
-    mov esp, ebp
-    jmp $
 
 times 510 - ($ - $$) db 0
 dw 0xaa55
