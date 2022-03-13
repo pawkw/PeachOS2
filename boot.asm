@@ -32,12 +32,6 @@ cont:
     mov word[ss:00], int_0
     mov word[ss:02], 0x7c0
 
-    mov si, message
-    call print
-
-    mov ax, 0
-    div ax
-
     jmp $
 
 print:
@@ -58,6 +52,5 @@ print_char:
     int 0x10
     ret
 
-message: db 'Hello from Peach OS', 0
 times 510 - ($ - $$) db 0
 dw 0xaa55
