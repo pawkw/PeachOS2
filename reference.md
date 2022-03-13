@@ -12,3 +12,5 @@ https://wiki.osdev.org/GCC_Cross-Compiler
 
 ## Read ATA sectors without BIOS
 https://wiki.osdev.org/ATA_read/write_sectors
+
+target remote | qemu-system-x86_64 -hda ./boot.bin -S -gdb stdio
