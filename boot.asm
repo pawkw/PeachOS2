@@ -2,13 +2,21 @@ ORG 0
 BITS 16
 
 _start:
-    ; BIOS parameter block
+    ; BIOS parameter block.
     jmp short start
     nop
     times 33 db 0
 
 start:
     jmp 0x7c0:cont
+
+int_0:
+    ; Divide by zero exception handler.
+    mov ah, 0eh
+    mov al, '!'
+    mov bx, 00
+    int 0x10
+    iret
 
 cont:
     cli
@@ -19,8 +27,17 @@ cont:
     mov ss, ax
     mov sp, 0x7c00
     sti
+
+    ; Set interrupt vector table
+    mov word[ss:00], int_0
+    mov word[ss:02], 0x7c0
+
     mov si, message
     call print
+
+    mov ax, 0
+    div ax
+
     jmp $
 
 print:
