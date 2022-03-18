@@ -20,3 +20,6 @@ _start:
     out 0x92, al
 
     jmp $
+
+; Pad the file so that the C code is aligned.
+times 512 - ($ - $$) db 0
