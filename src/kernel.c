@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include <stddef.h>
 #include <stdint.h>
+#include "io/io.h"
 
 int cursor_x = 0;
 int cursor_y = 0;
@@ -23,6 +24,16 @@ void terminal_put_char(int x, int y, char content, uint8_t foreground_colour, ui
     video_memory[y*VGA_WIDTH+x] = terminal_make_char(content, terminal_make_colour(foreground_colour, background_colour));
 }
 
+void update_cursor(void)
+{
+    uint16_t position = cursor_y * VGA_WIDTH + cursor_x;
+
+    outb(0x3D4, 0x0F);
+	outb(0x3D5, (uint8_t) (position & 0xFF));
+	outb(0x3D4, 0x0E);
+	outb(0x3D5, (uint8_t) ((position >> 8) & 0xFF));
+}
+
 void terminal_write_char(char content) 
 {
     if(content != '\n')
@@ -40,13 +51,15 @@ void terminal_write_char(char content)
     }
     if(cursor_y >= VGA_HEIGHT)
         cursor_y = 0;
+
+    update_cursor();
 }
 
 size_t strlen(const char* str)
 {
     size_t len = 0;
     while(str[len++]);
-    return len;
+    return --len;
 }
 
 void print(const char* str)
@@ -68,6 +81,7 @@ void terminal_initialize(uint8_t foreground_colour, uint8_t background_colour)
         video_memory[i] = blank;
     cursor_x = 0;
     cursor_y = 0;
+    update_cursor();
 }
 
 void kernel_main(void)
