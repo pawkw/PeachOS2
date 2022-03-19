@@ -1,5 +1,6 @@
 [BITS 32]
 global _start
+global problem_test
 extern kernel_main
 
 CODE_SEG equ 0x08
@@ -22,6 +23,11 @@ _start:
 
     call kernel_main
 
+    jmp $
+
+problem_test:
+    mov eax, 0
+    div eax
     jmp $
 
 ; Pad the file so that the C code is aligned.

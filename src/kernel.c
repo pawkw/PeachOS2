@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "io/io.h"
+#include "idt/idt.h"
 
 int cursor_x = 0;
 int cursor_y = 0;
@@ -73,8 +74,8 @@ void print(const char* str)
 
 void terminal_initialize(uint8_t foreground_colour, uint8_t background_colour) 
 {
-    g_foreground_colour = 0;
-    g_background_colour = 3;
+    g_foreground_colour = foreground_colour;
+    g_background_colour = background_colour;
     video_memory = (uint16_t*)(0xb8000);
     uint16_t blank = terminal_make_char(' ', terminal_make_colour(g_foreground_colour, g_background_colour));
     for(int i = 0; i < (VGA_WIDTH*VGA_HEIGHT); i++)
@@ -84,8 +85,15 @@ void terminal_initialize(uint8_t foreground_colour, uint8_t background_colour)
     update_cursor();
 }
 
+extern void problem_test(void);
+
 void kernel_main(void)
 {
+    // Initialize the interrupt descriptor table.
+    idt_init();
+
     terminal_initialize(0, 3);
-    print("Peach OS\n2022.");
+    print("Peach OS\n2022.\n");
+
+    problem_test();
 }
