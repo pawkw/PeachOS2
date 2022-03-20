@@ -85,15 +85,13 @@ void terminal_initialize(uint8_t foreground_colour, uint8_t background_colour)
     update_cursor();
 }
 
-extern void problem_test(void);
-
 void kernel_main(void)
 {
-    // Initialize the interrupt descriptor table.
-    idt_init();
-
     terminal_initialize(0, 3);
     print("Peach OS\n2022.\n");
 
-    problem_test();
+    // Initialize the interrupt descriptor table.
+    idt_init();
+
+    enable_interrupts();
 }

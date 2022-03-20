@@ -2,6 +2,8 @@
 #define IDT_H
 #include <stdint.h>
 
+#define int_acknowledge outb(0x20, 0x20)
+
 struct idt_desc
 {
     uint16_t offset_1; // Lower 16 bits.
@@ -18,4 +20,7 @@ struct idtr_desc
 } __attribute__((packed));
 
 void idt_init(void);
+void enable_interrupts(void);
+void disable_interrupts(void);
+
 #endif

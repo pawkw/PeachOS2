@@ -1,6 +1,5 @@
 [BITS 32]
 global _start
-global problem_test
 extern kernel_main
 
 CODE_SEG equ 0x08
@@ -21,13 +20,18 @@ _start:
     or al, 2
     out 0x92, al
 
+    ; Remap the master PIC.
+    mov al, 00010001b
+    out 0x20, al   ; Set PIC to init mode.
+
+    mov al, 0x20   ; Set master PIC IRQs to start at int 0x20.
+    out 0x21, al
+
+    mov al, 00000001b
+    out 0x21, al   ; Put PIC in x86 mode.
+
     call kernel_main
 
-    jmp $
-
-problem_test:
-    mov eax, 0
-    div eax
     jmp $
 
 ; Pad the file so that the C code is aligned.
