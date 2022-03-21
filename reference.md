@@ -17,4 +17,4 @@ https://wiki.osdev.org/ATA_read/write_sectors
 
 gdb
 add-symbol-file ./build/kernelfull.o 0x100000
-target remote | qemu-system-x86_64 -hda ./bin/os.bin -S -gdb stdio
+target remote | qemu-system-i386 -hda ./bin/os.bin -S -gdb stdio

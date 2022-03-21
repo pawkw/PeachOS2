@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "io/io.h"
 #include "idt/idt.h"
+#include "memory/heap/kernel_heap.h"
 
 int cursor_x = 0;
 int cursor_y = 0;
@@ -90,8 +91,32 @@ void kernel_main(void)
     terminal_initialize(0, 3);
     print("Peach OS\n2022.\n");
 
+    // Initialize the heap.
+    kernel_heap_init();
+
     // Initialize the interrupt descriptor table.
     idt_init();
 
+    void* pointer = kernel_malloc(50);
+    void* pointer2 = kernel_malloc(5000);
+    kernel_free(pointer);
+    void* pointer3 = kernel_malloc(50);
+
+    if(pointer == 0)
+        print("Pointer not allocated.\n");
+    else
+        print("Pointer allocated.\n");
+    
+    if(pointer2 == 0)
+        print("Pointer2 not allocated.\n");
+    else
+        print("Pointer2 allocated.\n");
+
+    if(pointer3 == 0)
+        print("Pointer3 not allocated.\n");
+    else
+        print("Pointer3 allocated.\n");
+
     enable_interrupts();
+
 }
