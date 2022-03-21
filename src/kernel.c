@@ -5,6 +5,7 @@
 #include "idt/idt.h"
 #include "memory/heap/kernel_heap.h"
 #include "memory/paging/paging.h"
+#include "disk/disk.h"
 
 int cursor_x = 0;
 int cursor_y = 0;
@@ -108,17 +109,11 @@ void kernel_main(void)
         print("Kernel chunk is zero.\n");
     }
     paging_switch(paging_4GB_chunk_get_directory(kernel_chunk));
-
     enable_paging();
 
-    char* pointer = kernel_zalloc(4096);
-    paging_set(paging_4GB_chunk_get_directory(kernel_chunk), (void*)0x1000, (uint32_t)pointer | PAGING_ACCESS_BY_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITABLE);
-    char* pointer2 = (char*)0x1000;
-    pointer2[0] = '!';
-    pointer2[1] = '\n';
-    print(pointer2);
-    print(pointer);
-
+    char buffer[512];
+    disk_read_sector(0, 1, buffer);
+    
     enable_interrupts();
 
 }
