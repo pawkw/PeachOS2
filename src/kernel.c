@@ -4,6 +4,7 @@
 #include "io/io.h"
 #include "idt/idt.h"
 #include "memory/heap/kernel_heap.h"
+#include "memory/paging/paging.h"
 
 int cursor_x = 0;
 int cursor_y = 0;
@@ -86,6 +87,8 @@ void terminal_initialize(uint8_t foreground_colour, uint8_t background_colour)
     update_cursor();
 }
 
+static struct paging_4GB_chunk* kernel_chunk = 0;
+
 void kernel_main(void)
 {
     terminal_initialize(0, 3);
@@ -97,25 +100,15 @@ void kernel_main(void)
     // Initialize the interrupt descriptor table.
     idt_init();
 
-    void* pointer = kernel_malloc(50);
-    void* pointer2 = kernel_malloc(5000);
-    kernel_free(pointer);
-    void* pointer3 = kernel_malloc(50);
-
-    if(pointer == 0)
-        print("Pointer not allocated.\n");
-    else
-        print("Pointer allocated.\n");
-    
-    if(pointer2 == 0)
-        print("Pointer2 not allocated.\n");
-    else
-        print("Pointer2 allocated.\n");
-
-    if(pointer3 == 0)
-        print("Pointer3 not allocated.\n");
-    else
-        print("Pointer3 allocated.\n");
+    // Set up and enable paging.
+    // TODO: This is a kernel page. It should not be accessible by all.
+    kernel_chunk = paging_new_4GB(PAGING_IS_PRESENT | PAGING_IS_WRITABLE | PAGING_ACCESS_BY_ALL);
+    if(kernel_chunk == 0)
+    {
+        print("Kernel chunk is zero.\n");
+    }
+    paging_switch(paging_4GB_chunk_get_directory(kernel_chunk));
+    enable_paging();
 
     enable_interrupts();
 
