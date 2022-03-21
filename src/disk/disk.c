@@ -1,6 +1,11 @@
+#include "disk.h"
 #include "status.h"
 #include "io/io.h"
+#include "memory/memory.h"
+#include "config.h"
 #include <stdint.h>
+
+struct disk disk;
 
 int disk_read_sector(int lba, int total_blocks_to_read, void* destination_buffer)
 {
@@ -39,4 +44,31 @@ int disk_read_sector(int lba, int total_blocks_to_read, void* destination_buffer
         }
     }
     return PEACHOS_ALL_OK;
+}
+
+void disk_search_and_init(void)
+{
+    // TODO: This only handles hdd 0.
+    memset(&disk, 0, sizeof(disk));
+    disk.disk_type = PEACHOS_DISK_TYPE_REAL;
+    disk.sector_size = PEACHOS_DISK_SECTOR_SIZE;
+}
+
+struct disk* disk_get(int disk_number)
+{
+    if(disk_number != 0)
+        return 0;
+    
+    return &disk;
+}
+
+int disk_read_block(struct disk* disk_to_read, unsigned int lba, int total_blocks_to_read, void* destination_buffer)
+{
+    // TODO: Implement multiple disks.
+    if(disk_to_read != &disk)
+    {
+        return -PEACHOS_IO_ERROR;
+    }
+
+    return disk_read_sector(lba, total_blocks_to_read, destination_buffer);
 }
